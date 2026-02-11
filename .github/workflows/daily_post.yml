@@ -3,7 +3,7 @@ name: Daily Reel Poster
 on:
   schedule:
     # Runs at 10:05 AM UTC every day. Change the number to adjust time.
-    - cron: '07 22 * * *'
+    - cron: '07 10 * * *'
   # Allows you to run it manually from the Actions tab for testing
   workflow_dispatch:
 
