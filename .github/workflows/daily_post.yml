@@ -1,0 +1,45 @@
+name: Daily Reel Poster
+
+on:
+  schedule:
+    # Runs at 10:05 AM UTC every day. Change the number to adjust time.
+    - cron: '07 22 * * *'
+  # Allows you to run it manually from the Actions tab for testing
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  post-reel:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Python Script
+        env:
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python main.py
+
+      - name: Commit and Push History
+        # This step saves the updated history.txt back to the repo
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions@github.com"
+          git add posted_history.txt
+          # Only commit if the file has changed
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update posting history" && git push)
